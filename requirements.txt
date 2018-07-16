@@ -1,0 +1,9 @@
+vaderSentiment
+pandas
+numpy
+scipy
+spacy
+python-levenshtein
+jellyfish
+networkx
+segtok
