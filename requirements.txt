@@ -7,3 +7,17 @@ python-levenshtein
 jellyfish
 networkx
 segtok
+elasticsearch
+nltk
+recordclass
+unidecode
+python-pcre
+requests
+Fabric
+Flask
+Flask-SQLAlchemy
+gunicorn
+ecdsa
+itsdangerous
+paramiko
+pycrypto
