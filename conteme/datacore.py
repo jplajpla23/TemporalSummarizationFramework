@@ -11,8 +11,6 @@ import math
 import jellyfish
 import re
 
-
-
 class DataCore(object):
     
     def __init__(self, stopword_set, windowsSize, tagsToDiscard = set(['u', 'd']), exclude = set(string.punctuation)):
@@ -80,21 +78,7 @@ class DataCore(object):
                         word_windows = list(range( max(0, len(block_of_word_obj)-self.windowsSize), len(block_of_word_obj) ))
                         for w in word_windows:
                             if block_of_word_obj[w][0] not in self.tagsToDiscard: 
-                                self.addCooccur(block_of_word_obj[w][2], term_obj)
-                    #Generate candidate keyphrase list
-                    """candidate = [ (tag, word, term_obj) ]
-                    cand = composed_word(candidate)
-                    cand = self.addOrUpdateComposedWord(cand)
-                    if cand.unique_kw not in document_candidates and cand.isValid():
-                        document_candidates[cand.unique_kw] = cand
-                    word_windows = list(range( max(0, len(block_of_word_obj)-(self.n-1)), len(block_of_word_obj) ))[::-1]
-                    for w in word_windows:
-                        candidate.append(block_of_word_obj[w])
-                        self.freq_ns[len(candidate)] += 1.
-                        cand = composed_word(candidate[::-1])
-                        cand = self.addOrUpdateComposedWord(cand)
-                        if cand.unique_kw not in document_candidates and cand.isValid():
-                            document_candidates[cand.unique_kw] = cand"""
+                                self.addCooccur(block_of_word_obj[w][2], term_obj)              
 
                     # Add term to the block of words' buffer
                     block_of_word_obj.append( (tag, word, term_obj) )
@@ -108,6 +92,7 @@ class DataCore(object):
             sentences_obj.append(sentence_obj_aux)
         self.number_of_words += pos_text
         return document_candidates, term_in_doc
+
     def compute_jaccard_similarity_score(self, x, y):
         intersection_cardinality = len(set(x).intersection(set(y)))
         union_cardinality = len(set(x).union(set(y)))
@@ -188,6 +173,7 @@ class DataCore(object):
             if len([c for c in word if c.isupper()]) == 1 and len(word) > 1 and word[0].isupper() and i > 0:
                 return "n"
         return "p"
+
     def getTerm(self, str_word, save_non_seen=True):
         unique_term = str_word.lower()
         simples_sto = unique_term in self.stopword_set
@@ -242,19 +228,23 @@ class composed_word(object):
         self.integrity = 1.
         self.H = 1.
         self.start_or_end_stopwords = self.terms[0].stopword or self.terms[-1].stopword
+
     def uptadeCand(self, cand):
         for tag in cand.tags:
             self.tags.add( tag )
+
     def isValid(self):
         isValid = False
         for tag in self.tags:
             isValid = isValid or ( "u" not in tag and "d" not in tag )
         return isValid and not self.start_or_end_stopwords
+
     def get_composed_feature(self, feature_name, discart_stopword=True):
         list_of_features = [ getattr(term, feature_name) for term in self.terms if ( discart_stopword and not term.stopword ) or not discart_stopword ]
         sum_f  = sum(list_of_features)
         prod_f = np.prod(list_of_features)
         return ( sum_f, prod_f, prod_f /(sum_f + 1) )
+
     def build_features(self, doc_id=None, keys=None, rel=True, rel_approx=True, isVirtual=False, features=['WFreq', 'WRel', 'tf', 'WCase', 'WPos', 'WSpread'], _stopword=[True, False]):
         columns = []
         seen = set()
@@ -351,6 +341,7 @@ class single_word(object):
         self.bias = 1.
 
         self.pagerank = 1.
+
     def updateH(self, maxTF, avgTF, stdTF, number_of_sentences, features=None):
         if features == None or "WRel" in features:
             self.PL = self.WDL / maxTF
@@ -379,9 +370,11 @@ class single_word(object):
     @property
     def WDR(self):
         return len( self.G.out_edges(self.id) )
+
     @property
     def WIR(self):
         return sum( [ d['TF'] for (u,v,d) in self.G.out_edges(self.id, data=True) ] )
+
     @property
     def PWR(self):
         wir = self.WIR
@@ -392,9 +385,11 @@ class single_word(object):
     @property
     def WDL(self):
         return len( self.G.in_edges(self.id) )
+
     @property
     def WIL(self):
         return sum( [ d['TF'] for (u,v,d) in self.G.in_edges(self.id, data=True) ] )
+        
     @property
     def PWL(self):
         wil = self.WIL
