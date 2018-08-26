@@ -20,10 +20,7 @@ temporal summarization engine
   query = 'Dilma Rousseff'
   language = "pt"
 
-  #instantiate ArquivoPT search engine
   apt =  ArquivoPT()
-
-  print('Perform search')
   search_result = apt.getResult(query=query, **params)
 ```  
 
