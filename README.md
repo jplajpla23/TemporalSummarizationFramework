@@ -39,14 +39,9 @@ Computing important dates and selecting relevant keyphrases
   
   cont = conteme.conteme.Conteme()
   intervals = cont.build_intervals(search_result, language, query)
-
-  periods = intervals["results"]
-  for period in periods:
-      print("-------------------------")
-      print(period["from"],"until",period["to"])
-      headlines = period["from_all_keys"]
-      for headline in headlines:
-          print("\t",headline.kw)
+  
+  cont.pprint(intervals)
+	  
 ``` 
 Output
 ``` 
@@ -93,6 +88,32 @@ Output
 	 processo de impeachment de dilma já está na comissão especial no senado
 
  ``` 
+
+## Iterate over response
+
+ ```python
+summ_result = cont.build_intervals(search_result, language, query)
+
+for period in summ_result["results"]:
+    
+    print("--------------------------------")
+    print(period["from"],"until",period["to"])
+    
+    # selected keyphrases
+    keyphrases = period["from_all_keys"]
+    
+    for keyphrase in keyphrases:
+        print(keyphrase.kw)
+        
+        # sources
+        for headline in keyphrase.headlines:
+            print("Date", headline.info.datetime)
+            print("Source", headline.info.domain)
+            print("Url", headline.info.url)
+            
+        print()  
+		
+ ```
 
 ## Serialization
 Serializing results. Useful for caching.
