@@ -1,8 +1,6 @@
-vaderSentiment
 pandas
 numpy
 scipy
-spacy
 python-levenshtein
 jellyfish
 networkx
@@ -11,13 +9,4 @@ elasticsearch
 nltk
 recordclass
 unidecode
-python-pcre
 requests
-Fabric
-Flask
-Flask-SQLAlchemy
-gunicorn
-ecdsa
-itsdangerous
-paramiko
-pycrypto
