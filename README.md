@@ -8,6 +8,7 @@ temporal summarization engine
 
 ### Using ArquivoPT search engine API as datasource.
   
+```python  
   from conteme.datasources.ArquivoPT import ArquivoPT
 
   domains = [ 'http://publico.pt/', 'http://www.dn.pt/', 'http://www.rtp.pt/', 'http://www.cmjornal.xl.pt/', 'http://www.iol.pt/', 'http://www.tvi24.iol.pt/', 'http://noticias.sapo.pt/', 'http://expresso.sapo.pt/', 'http://sol.sapo.pt/', 'http://www.jornaldenegocios.pt/', 'http://abola.pt/', 'http://www.jn.pt/', 'http://sicnoticias.sapo.pt/', 'http://www.lux.iol.pt/', 'http://www.ionline.pt/', 'http://news.google.pt/', 'http://www.dinheirovivo.pt/', 'http://www.aeiou.pt/', 'http://www.tsf.pt/', 'http://meiosepublicidade.pt/', 'http://www.sabado.pt/', 'http://dnoticias.pt/', 'http://economico.sapo.pt/']
@@ -21,9 +22,11 @@ temporal summarization engine
 
   print('Perform search')
   search_result = apt.getResult(query=query, **params)
-  
-### Computing important dates and selecting relevant keyphrases
+```  
 
+### Computing important dates and selecting relevant keyphrases
+  
+```python 
   cont = conteme.conteme.Conteme()
   intervals = cont.build_intervals(search_result, language, query)
 
@@ -34,3 +37,4 @@ temporal summarization engine
       headlines = period["from_all_keys"]
       for headline in headlines:
           print("\t",headline.kw)
+``` 
