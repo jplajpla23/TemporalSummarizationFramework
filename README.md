@@ -1,8 +1,12 @@
 # Temporal Summarization
-Temporal summarization engine
+This package can retrive articles from Arquivo.pt web archive and produce a temporal summarization.
 
 ## Install
+Requires Python 3
+
  ```bash
+ git clone  https://github.com/LIAAD/TemporalSummarizationFramework.git
+ cd TemporalSummarizationFramework
  pip install -r requirements.txt
 ```
 
