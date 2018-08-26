@@ -87,14 +87,29 @@ Output
  ``` 
 
 ## Serialization
-Serializing results
+Serializing results. Useful for caching.
 
+### Serializing search results
  ```python
 search_result = apt.getResult(query=query, **params)
 
-#saving
-with open("cache.json", "w") as text_file:
-	text_file.write(apt.toStr(search_result))
+# object to string
+search_result_serialized = apt.toStr(search_result) 
 
-#loading
-search_result = apt.toObj( open("cache.json", "r").read() )
+# string to object
+search_result = apt.toObj( search_result_serialized )
+```
+ 
+### Serializing summarization results
+```python
+import json
+
+summ_result = conteme.build_intervals(search_result)
+
+# object to string
+summ_result_serialized = json.dumps(conteme.serialize(summ_result))
+
+# string to object
+summ_result = json.loads(str(summ_result_serialized))
+```
+ 
