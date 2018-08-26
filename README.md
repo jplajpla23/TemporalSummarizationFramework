@@ -2,7 +2,9 @@
 temporal summarization engine
 
 ## install
-  > pip install -r requirements.txt
+ ```bash
+ pip install -r requirements.txt
+```
 
 ## Usage 
 
