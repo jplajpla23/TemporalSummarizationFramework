@@ -1,4 +1,4 @@
-# Temporal Summarization
+# Conta-me Historias Temporal Summarization
 This package can retrive articles from Arquivo.pt web archive and produce a temporal summarization.
 
 ## Install
