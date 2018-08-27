@@ -191,6 +191,7 @@ summ_result = json.loads(str(summ_result_serialized))
 ## Extending 
 You can extend it to use your own data source.  All you need to do is extend [SearchEngine](contamehistorias/datasources/SearchEngine.py) class. 
 Take a look at the example using [BingNewsSearchAPI](contamehistorias/datasources/BingNewsSearchAPI.py).
+Method **getResult** must return list of object ResultHeadLine.
 
 ```python
 class SearchEngine(object):
@@ -199,6 +200,7 @@ class SearchEngine(object):
 		self.name = name
 
 	def getResult(self, query, **kwargs):
+		## must returl list of ResultHeadLine(headline, datetime, domain, url)
 		raise NotImplementedError('getResult on ' + self.name + ' not implemented yet!')
 
 	def toStr(self, list_of_headlines_obj):
