@@ -59,22 +59,14 @@ class ArquivoPT(SearchEngine):
 		'fields': 'originalURL,title,tstamp,encoding,linkToArchive'
 		}
 
-		print("##########################################################")
-		print("Requesting news from Arquivo.pt API",self.URL_REQUEST)
-		print('Starting thread with domains =', domains)
-		print("request params",params)
-
 		try:
 			arquivopt_query_time = time.time()
 			response = requests.get(ArquivoPT.URL_REQUEST, params=params, timeout=45)
-			print("request.url",response.url)
 			arquivopt_query_time = time.time() - arquivopt_query_time
-			print("tempo de resposta",arquivopt_query_time)
 		except:
 			print('Timeout domains =', domains)
 			return None
 
-		print('End thread with domains =', domains)
 		if response.status_code != 200:
 			return None
 		json_obj = response.json()

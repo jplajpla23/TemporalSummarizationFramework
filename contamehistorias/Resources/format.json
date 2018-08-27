@@ -16,30 +16,13 @@
 	},
 	"domains": [ "str" ], // Nome dos domínios recuperados na consulta
 	"query_term_corr": [ ["str", "float"] ], // par de termos mais correlatos com a consulta "query" e seus respectivos pesos
-	"sentiment": {
-		"raw": [ [ "int", "int", "str" ] ], // sentimentos dos documentos processados na consulta.
-											// A tripla é dada como:
-												// id do domínio (mesmo id do array domains);
-												// sentimento (-1=negativo,0=neutro,1=positivo);
-												// date: data do documento que ocorre determinado resultado
-		"all": { "int": "int" } // Sumarização dos resultados. Contagem dos sentimentos.
-	},
 	"results": [ {
 			"from": "str", // data de início do intervalo
 			"to": "str",   // data de fim do intervalo
 			"ndocs": "int", // quantidade de documentos no intervalo
 			"from_all_keys": [ ["str","float","int"] ], // resultados para todos domínios e todos sentimentos
 												// string do keyphrase;
-												// peso do keyphrase (menos é melhor);
-												// sentimento da keyphrase (-1=negativo,0=neutro,1=positivo)
-			"positive": [ ["str","float","int"] ], // resultados para todos domínios e com sentimento positivo
-												// string do keyphrase;
-												// peso do keyphrase (menos é melhor);
-												// sentimento da keyphrase (-1=negativo,0=neutro,1=positivo)
-			"negative": [ ["str","float","int"] ], // resultados para todos domínios e com sentimento negativo
-												// string do keyphrase;
-												// peso do keyphrase (menos é melhor);
-												// sentimento da keyphrase (-1=negativo,0=neutro,1=positivo)
+												// peso do keyphrase (menos é melhor);	
 		} ]
 
 }

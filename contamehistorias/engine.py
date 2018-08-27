@@ -1,5 +1,4 @@
-#from .engines import SearchEngine
-from .datacore import DataCore
+from contamehistorias.datacore import DataCore
 
 from itertools import repeat
 from collections import Counter, namedtuple
@@ -8,11 +7,13 @@ from scipy import signal
 from glob import glob
 import Levenshtein, time
 import numpy as np
+from stop_words import get_stop_words
 
 ProcessedHeadline = namedtuple('ProcessedHeadline', ['info', 'candidates', 'terms'])
 Keyphrase = namedtuple('Keyphrase', ['kw', 'cand_obj', 'headlines'])
 
-class Conteme(object):
+class TemporalSummarizationEngine(object):
+	
 	def __init__(self, windowsSize=2, top=20, thres=0.8):
 		self.windowsSize = windowsSize
 		self.stopwords = {}
@@ -186,15 +187,17 @@ class Conteme(object):
 				break
 		general_results = sorted(general_results, key=lambda x: min([ t.info.datetime for t in x.headlines ]))
 		return general_results, all_kw
+
 	def can_add(self, all_kw, kw):
 		for kw2 in all_kw:
 			dd = Levenshtein.ratio(kw.cand_obj.unique_kw, kw2.cand_obj.unique_kw)
 			if dd > self.thres or kw.cand_obj.unique_kw in kw2.cand_obj.unique_kw or kw2.cand_obj.unique_kw in kw.cand_obj.unique_kw:
 				return False
 		return True
+		
 	def getStopword(self, lan):
 		if lan not in self.stopwords:
-			self.stopwords[lan] = set( open(path.join(path.dirname(path.realpath(__file__)),'Resources','StopwordsList', 'stopwords_%s.txt' % lan), encoding='utf8').read().lower().split("\n") )
+			self.stopwords[lan] = get_stop_words(lan)
 		return self.stopwords[lan]
 	
 	def serialize(self, result):
@@ -219,3 +222,21 @@ class Conteme(object):
 			result_interval = { 'from':str(chunk['from']), 'to':str(chunk['to']), 'ndocs': len(chunk), 'from_all_keys': result_chunk }
 			serialized['results'].append(result_interval)
 		return serialized
+
+	def pprint(self, intervals):
+		
+		if("results" in intervals.keys()):
+			periods = intervals["results"]
+			for period in periods:
+				
+				print(period["from"],"until",period["to"])
+				
+				headlines = period["from_all_keys"]
+				for headline in headlines:
+					print("\t" + headline.kw)
+				
+				print()
+
+		
+			
+		

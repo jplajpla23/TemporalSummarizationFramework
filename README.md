@@ -5,17 +5,64 @@ This package can retrive articles from Arquivo.pt web archive and produce a temp
 Requires Python 3
 
  ```bash
- git clone  https://github.com/LIAAD/TemporalSummarizationFramework.git
- cd TemporalSummarizationFramework
- pip install -r requirements.txt
+ pip install git+https://github.com/LIAAD/TemporalSummarizationFramework.git
+ ```
+
+## Using terminal
+
+Accessing client help
+
+```bash
+
+> contamehistorias --help
+
+Usage: contamehistorias [OPTIONS]
+
+  Console script for tempsummarization.
+
+Options:
+  --query TEXT       Perform news retrieval with informed query
+  --domains TEXT     Comma separated list of domains
+                     (www.publico.pt,www.dn.pt)
+  --language TEXT    Expected language in headlines
+  --start_date DATE  Perform news retrieval since this date. Default 01/01/2010. Format dd/mm/YYYY
+  --end_date DATE    Perform news retrieval until this date. Default today. Format dd/mm/YYYY
+  --help             Show this message and exit.
 ```
 
-## Usage 
+Running your query. You can specify start_date and end_date using date format (dd/mm/YYYY).
+
+```bash
+> contamehistorias --query "Donald Trump"
+
+
+2010-04-12 16:37:09 until 2011-05-19 00:23:39
+	filha de donald trump está grávida
+	quanto vale donald trump
+	donald trump deverá anunciar candidatura à casa branca
+
+2011-07-19 16:24:20 until 2015-11-21 19:54:41
+	donald trump vai apoiar mitt romney nas primárias
+	multimilionário donald trump apoia candidatura de mitt romney
+	multimilionário donald trump anuncia candidatura à corrida presidencial norte-americana
+
+2015-11-22 19:02:15 until 2016-09-30 01:20:27
+	donald trump quer proibir entrada de muçulmanos nos eua
+	obama graceja sobre possível discurso do estado da união de donald trump
+	deputados britânicos discutiram proibição de entrada donald trump no reino unido
+
+2015-11-22 19:02:15 until 2016-09-30 01:20:27
+	donald trump quer proibir entrada de muçulmanos nos eua
+	obama graceja sobre possível discurso do estado da união de donald trump
+	deputados britânicos discutiram proibição de entrada donald trump no reino unido
+```
+
+## Code Usage 
 
 Using ArquivoPT search engine API as datasource.
   
 ```python  
-  from conteme.datasources.ArquivoPT import ArquivoPT
+  from contamehistorias.datasources.ArquivoPT import ArquivoPT
 
 # Specify website and time frame to restrict your query
   domains = [ 'http://publico.pt/', 'http://www.dn.pt/', 'http://www.rtp.pt/', 'http://www.cmjornal.xl.pt/', 'http://www.iol.pt/', 'http://www.tvi24.iol.pt/', 'http://noticias.sapo.pt/', 'http://expresso.sapo.pt/', 'http://sol.sapo.pt/', 'http://www.jornaldenegocios.pt/', 'http://abola.pt/', 'http://www.jn.pt/', 'http://sicnoticias.sapo.pt/', 'http://www.lux.iol.pt/', 'http://www.ionline.pt/', 'http://news.google.pt/', 'http://www.dinheirovivo.pt/', 'http://www.aeiou.pt/', 'http://www.tsf.pt/', 'http://meiosepublicidade.pt/', 'http://www.sabado.pt/', 'http://dnoticias.pt/', 'http://economico.sapo.pt/']
@@ -26,7 +73,6 @@ Using ArquivoPT search engine API as datasource.
   
   query = 'Dilma Rousseff'
   
-
   apt =  ArquivoPT()
   search_result = apt.getResult(query=query, **params)
 ```  
@@ -37,7 +83,7 @@ Computing important dates and selecting relevant keyphrases
   
   language = "pt"
   
-  cont = conteme.conteme.Conteme()
+  cont = contamehistorias.engine.TemporalSummarizationEngine()
   intervals = cont.build_intervals(search_result, language, query)
   
   cont.pprint(intervals)
@@ -141,4 +187,27 @@ summ_result_serialized = json.dumps(conteme.serialize(summ_result))
 # string to object
 summ_result = json.loads(str(summ_result_serialized))
 ```
- 
+
+## Extending 
+You can extend it to use your own data source.  All you need to do is extend [SearchEngine](contamehistorias/datasources/SearchEngine.py) class. 
+Take a look at the example using [BingNewsSearchAPI](contamehistorias/datasources/BingNewsSearchAPI.py).
+
+```python
+class SearchEngine(object):
+
+	def __init__(self, name):
+		self.name = name
+
+	def getResult(self, query, **kwargs):
+		raise NotImplementedError('getResult on ' + self.name + ' not implemented yet!')
+
+	def toStr(self, list_of_headlines_obj):
+		return json.dumps(list(map(lambda obj: obj.encoder(), list_of_headlines_obj)))
+
+	def toObj(self, list_of_headlines_str):
+		return [ ResultHeadLine.decoder(x) for x in json.loads(list_of_headlines_str) ]
+```
+## Contact
+admin@contamehistorias.pt
+
+Developed by researchers from Laboratório de Inteligência Artificial e Apoio a Decisão (LIAAD - INESCTEC), and affiliated to Instituto Politécnico de Tomar ; Universidade do Porto; Universidade de Kyoto
