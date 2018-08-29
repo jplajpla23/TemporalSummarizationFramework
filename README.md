@@ -22,11 +22,12 @@ Usage: contamehistorias [OPTIONS]
 
 Options:
   --query TEXT       Perform news retrieval with informed query
+  --language TEXT    Expected language in headlines
+  --start_date DATE  Perform news retrieval since this date
+  --end_date DATE    Perform news retrieval until this date
   --domains TEXT     Comma separated list of domains
                      (www.publico.pt,www.dn.pt)
-  --language TEXT    Expected language in headlines
-  --start_date DATE  Perform news retrieval since this date. Default 01/01/2010. Format dd/mm/YYYY
-  --end_date DATE    Perform news retrieval until this date. Default today. Format dd/mm/YYYY
+  --verbose
   --help             Show this message and exit.
 ```
 
@@ -62,10 +63,11 @@ Running your query. You can specify start_date and end_date using date format (d
 Using ArquivoPT search engine API as datasource.
   
 ```python  
-  from contamehistorias.datasources.ArquivoPT import ArquivoPT
+  from contamehistorias.datasources.webarchive import ArquivoPT
 
 # Specify website and time frame to restrict your query
-  domains = [ 'http://publico.pt/', 'http://www.dn.pt/', 'http://www.rtp.pt/', 'http://www.cmjornal.xl.pt/', 'http://www.iol.pt/', 'http://www.tvi24.iol.pt/', 'http://noticias.sapo.pt/', 'http://expresso.sapo.pt/', 'http://sol.sapo.pt/', 'http://www.jornaldenegocios.pt/', 'http://abola.pt/', 'http://www.jn.pt/', 'http://sicnoticias.sapo.pt/', 'http://www.lux.iol.pt/', 'http://www.ionline.pt/', 'http://news.google.pt/', 'http://www.dinheirovivo.pt/', 'http://www.aeiou.pt/', 'http://www.tsf.pt/', 'http://meiosepublicidade.pt/', 'http://www.sabado.pt/', 'http://dnoticias.pt/', 'http://economico.sapo.pt/']
+  domains = [ 'http://publico.pt/', 'http://www.rtp.pt/',
+  			  'http://www.dn.pt/', 'http://news.google.pt/',]
 
   params = { 'domains':domains, 
             'from':datetime(year=2016, month=3, day=1), 
@@ -84,7 +86,7 @@ Computing important dates and selecting relevant keyphrases
   language = "pt"
   
   cont = contamehistorias.engine.TemporalSummarizationEngine()
-  intervals = cont.build_intervals(search_result, language, query)
+  intervals = cont.build_intervals(search_result, language)
   
   cont.pprint(intervals)
 	  
@@ -138,7 +140,7 @@ Output
 ## Iterate over response
 
  ```python
-summ_result = cont.build_intervals(search_result, language, query)
+summ_result = cont.build_intervals(search_result, language)
 
 for period in summ_result["results"]:
     
@@ -146,7 +148,7 @@ for period in summ_result["results"]:
     print(period["from"],"until",period["to"])
     
     # selected keyphrases
-    keyphrases = period["from_all_keys"]
+    keyphrases = period["keyphrases"]
     
     for keyphrase in keyphrases:
         print(keyphrase.kw)
@@ -189,12 +191,12 @@ summ_result = json.loads(str(summ_result_serialized))
 ```
 
 ## Extending 
-You can extend it to use your own data source.  All you need to do is extend [SearchEngine](contamehistorias/datasources/SearchEngine.py) class. 
-Take a look at the example using [BingNewsSearchAPI](contamehistorias/datasources/BingNewsSearchAPI.py).
+You can extend it to use your own data source.  All you need to do is extend [BaseDataSource](contamehistorias/datasources/models.py) class. 
+Take a look at the example using [BingNewsSearchAPI](contamehistorias/datasources/bing.py).
 Method **getResult** must return list of object ResultHeadLine.
 
 ```python
-class SearchEngine(object):
+class BaseDataSource(object):
 
 	def __init__(self, name):
 		self.name = name

@@ -13,3 +13,4 @@ requests
 Click>=6.0
 click_datetime==0.2
 stop-words
+mediacloud

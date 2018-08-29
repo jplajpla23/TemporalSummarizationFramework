@@ -1,19 +1,17 @@
-from .SearchEngine import *
+# -*- coding: utf-8 -*-
+from .models import *
 
-class BingNewsSearchAPI(SearchEngine):
+class BingNewsSearchAPI(BaseDataSource):
 	URL_REQUEST = 'https://api.cognitive.microsoft.com/bing/v7.0/news/search'
-	INPUT_FORMAT = '%Y-%m-%dT%H:%M:%S'
-	ITEM_DATE_FIELD_NAME = "datePublished"
-	API_KEY="2c85bccab9fc45f6b94f77ab95446e3f"
 	
-	def __init__(self, processes=4):
-		SearchEngine.__init__(self, 'BingNewsSearchAPI')
-		self.processes = processes
-		self.headers = {"Ocp-Apim-Subscription-Key" : BingNewsSearchAPI.API_KEY}
+	def __init__(self, api_key, processes=4):
+		BaseDataSource.__init__(self, 'BingNewsSearchAPI')
+		self.api_key = api_key
+		self.processes = processes		
 
 	def parse_news_article(self, item):
 		
-		pubdate = datetime.strptime(item[BingNewsSearchAPI.ITEM_DATE_FIELD_NAME].replace('.0000000Z',''), BingNewsSearchAPI.INPUT_FORMAT)
+		pubdate = datetime.strptime(item["datePublished"].replace('.0000000Z',''), '%Y-%m-%dT%H:%M:%S')
 		domain_name = item["provider"][0]["name"]
 
 		result_item = ResultHeadLine(headline=item['name'], datetime=pubdate, domain=domain_name, url=item['url'])
@@ -23,8 +21,9 @@ class BingNewsSearchAPI(SearchEngine):
 		
 		params  = {"q": query, "count":"100", "mkt":"en-US"}
 		
-		
-		response = requests.get(BingNewsSearchAPI.URL_REQUEST, headers=self.headers, params=params)
+		headers = {"Ocp-Apim-Subscription-Key" : self.api_key}
+
+		response = requests.get(BingNewsSearchAPI.URL_REQUEST, headers=headers, params=params)
 		response.raise_for_status()
 		search_results = response.json()
 
@@ -56,6 +55,7 @@ class BingNewsSearchAPI(SearchEngine):
 			response = requests.get(BingNewsSearchAPI.URL_REQUEST, headers=self.headers, params=params)
 			response.raise_for_status()
 			search_results = response.json()
+
 			for article in search_results["value"]:
 				results.append(self.parse_news_article(article))
 

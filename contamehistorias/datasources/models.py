@@ -1,18 +1,9 @@
-
-from collections import Counter, namedtuple
-from urllib.parse import urlparse
-from multiprocessing import Pool
-from itertools import repeat
+# -*- coding: utf-8 -*-
 from datetime import datetime
-import requests, json, re, time
-from dateutil import parser
-import numpy as np
-import random
-import time
-
 import json
+from .utils import *
 
-class SearchEngine(object):
+class BaseDataSource(object):
 
 	def __init__(self, name):
 		self.name = name
@@ -26,14 +17,13 @@ class SearchEngine(object):
 	def toObj(self, list_of_headlines_str):
 		return [ ResultHeadLine.decoder(x) for x in json.loads(list_of_headlines_str) ]
 
-
 class RoundTripEncoder(json.JSONEncoder):
-    DATE_FORMAT = "%Y-%m-%d"
-    TIME_FORMAT = "%H:%M:%S"
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime("%s %s" % (self.DATE_FORMAT, self.TIME_FORMAT))
-        return super(RoundTripEncoder, self).default(obj)
+	DATE_FORMAT = "%Y-%m-%d"
+	TIME_FORMAT = "%H:%M:%S"
+	def default(self, obj):
+		if isinstance(obj, datetime):
+			return obj.strftime("%s %s" % (self.DATE_FORMAT, self.TIME_FORMAT))
+		return super(RoundTripEncoder, self).default(obj)
 
 class ResultHeadLine(object):
 
@@ -47,5 +37,6 @@ class ResultHeadLine(object):
 	def decoder(cls, json_str):
 		json_obj = json.loads(json_str)
 		return cls(headline = json_obj['headline'], datetime=datetime.strptime(json_obj['datetime'], "%s %s" % (RoundTripEncoder.DATE_FORMAT, RoundTripEncoder.TIME_FORMAT)), domain = json_obj['domain'], url = json_obj['url'])
+	
 	def encoder(self):
 		return json.dumps(self.__dict__, cls=RoundTripEncoder)

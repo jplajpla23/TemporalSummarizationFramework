@@ -1,6 +1,4 @@
 
-
-
 mediacloud_news_domains_PT = [
     {"media_id": 570523,
     "url": "http://acervo.publico.pt/",

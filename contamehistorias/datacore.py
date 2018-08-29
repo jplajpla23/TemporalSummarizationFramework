@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from segtok.segmenter import split_multi
 from segtok.tokenizer import web_tokenizer, split_contractions
@@ -13,33 +14,40 @@ import re
 
 class DataCore(object):
     
-    def __init__(self, stopword_set, windowsSize, tagsToDiscard = set(['u', 'd']), exclude = set(string.punctuation)):
+    def __init__(self, stopword_set, windows_size, tagsToDiscard = set(['u', 'd']), exclude = set(string.punctuation)):
         self.number_of_documents = 0
         self.number_of_sentences = 0
         self.number_of_words = 0
         self.terms = {}
         self.term_vector = []
         self.candidates = {}
-        self.windowsSize = windowsSize
+        self.freq_ns = {}
+        
         self.G = nx.DiGraph()
+
+        self.windowsSize = windows_size
         self.exclude = exclude
         self.tagsToDiscard = tagsToDiscard
-        self.freq_ns = {}
         self.stopword_set = stopword_set
 
     def build_candidate(self, candidate_string):
         sentences_str = [w for w in split_contractions(web_tokenizer(candidate_string.lower())) if not (w.startswith("'") and len(w) > 1) and len(w) > 0]
         candidate_terms = []
+
         for (i, word) in enumerate(sentences_str):
-            tag = self.getTag(word, i)
-            term_obj = self.getTerm(word, save_non_seen=False)
+            tag = self.get_tag(word, i)
+            term_obj = self.get_term(word, save_non_seen=False)
+            
             if term_obj.tf == 0:
                 term_obj = None
+
             candidate_terms.append( (tag, word, term_obj) )
+
         if len([cand for cand in candidate_terms if cand[2] != None]) == 0:
-            invalid_virtual_cand = composed_word(None)
+            invalid_virtual_cand = ComposedWord(None)
             return invalid_virtual_cand
-        virtual_cand = composed_word(candidate_terms)
+
+        virtual_cand = ComposedWord(candidate_terms)
         return virtual_cand
 
     # Build the datacore features
@@ -62,23 +70,23 @@ class DataCore(object):
                 if len([c for c in word if c in self.exclude]) == len(word): # If the word is based on exclude chars
                     if len(block_of_word_obj) > 0:
                         sentence_obj_aux.append( block_of_word_obj )
-                        cand = composed_word(block_of_word_obj)
-                        cand = self.addOrUpdateComposedWord(cand)
+                        cand = ComposedWord(block_of_word_obj)
+                        cand = self.add_or_update_composed_word(cand)
                         if cand.unique_kw not in document_candidates:
                             document_candidates[cand.unique_kw] = cand
                         block_of_word_obj = []
                 else:
-                    tag = self.getTag(word, pos_sent)
-                    term_obj = self.getTerm(word)
+                    tag = self.get_tag(word, pos_sent)
+                    term_obj = self.get_term(word)
                     term_in_doc[term_obj.unique_term] = term_obj
-                    term_obj.addOccur(tag, sentence_id, pos_sent, pos_text, self.number_of_documents)
+                    term_obj.add_occurrence(tag, sentence_id, pos_sent, pos_text, self.number_of_documents)
                     pos_text += 1
                     #Create co-occurrence matrix
                     if tag not in self.tagsToDiscard:
                         word_windows = list(range( max(0, len(block_of_word_obj)-self.windowsSize), len(block_of_word_obj) ))
                         for w in word_windows:
                             if block_of_word_obj[w][0] not in self.tagsToDiscard: 
-                                self.addCooccur(block_of_word_obj[w][2], term_obj)              
+                                self.add_cooccurrence(block_of_word_obj[w][2], term_obj)              
 
                     # Add term to the block of words' buffer
                     block_of_word_obj.append( (tag, word, term_obj) )
@@ -109,9 +117,9 @@ class DataCore(object):
         for (sentence_id, sentence) in enumerate(sentences_str):
             for (pos_sent, word) in enumerate(sentence):
                 if len([c for c in word if c in self.exclude]) != len(word):
-                    tag = self.getTag(word, pos_sent)
+                    tag = self.get_tag(word, pos_sent)
                     if tag not in self.tagsToDiscard:
-                        term_obj = self.getTerm(word)
+                        term_obj = self.get_term(word)
                         if not term_obj.stopword and term_obj.unique_term not in query_objs:
                             query_objs[term_obj.unique_term] = (term_obj, flatten([[ out_v for (in_v, out_v) in self.G.out_edges(term_obj.id) ], [ in_v for (in_v, out_v) in self.G.in_edges(term_obj.id) ]]))
         if len(query_objs) == 0:
@@ -145,7 +153,7 @@ class DataCore(object):
         list(map(lambda x: x.updateH(maxTF=maxTF, avgTF=avgTF, stdTF=stdTF, number_of_sentences=self.number_of_sentences, features=features), self.terms.values()))
 
     def build_mult_terms_features(self, features=None):
-        list(map(lambda x: x.updateH(features=features), [cand for cand in self.candidates.values() if cand.isValid()]))
+        list(map(lambda x: x.updateH(features=features), [cand for cand in self.candidates.values() if cand.is_valid()]))
 
     def pre_filter(self, text):
         prog = re.compile("^(\\s*([A-Z]))")
@@ -158,7 +166,7 @@ class DataCore(object):
             buffer += sep + part.replace('\t',' ')
         return buffer
 
-    def getTag(self, word, i):
+    def get_tag(self, word, i):
         try:
             w2 = word.replace(",","")
             float(w2)
@@ -174,7 +182,7 @@ class DataCore(object):
                 return "n"
         return "p"
 
-    def getTerm(self, str_word, save_non_seen=True):
+    def get_term(self, str_word, save_non_seen=True):
         unique_term = str_word.lower()
         simples_sto = unique_term in self.stopword_set
         if unique_term.endswith('s') and len(unique_term) > 3:
@@ -191,7 +199,7 @@ class DataCore(object):
         isstopword = simples_sto or unique_term in self.stopword_set or len(simples_unique_term) < 3
         
         term_id = len(self.terms)
-        term_obj = single_word(unique_term, term_id, self.G)
+        term_obj = SingleWord(unique_term, term_id, self.G)
         self.term_vector.append(term_obj)
         term_obj.stopword = isstopword
         if save_non_seen:
@@ -199,26 +207,28 @@ class DataCore(object):
             self.terms[unique_term] = term_obj
         return term_obj
 
-    def addCooccur(self, left_term, right_term):
+    def add_cooccurrence(self, left_term, right_term):
         if right_term.id not in self.G[left_term.id]:
             self.G.add_edge(left_term.id, right_term.id, TF=0.)
         self.G[left_term.id][right_term.id]["TF"]+=1.
         
-    def addOrUpdateComposedWord(self, cand):
+    def add_or_update_composed_word(self, cand):
         if cand.unique_kw not in self.candidates:
             self.candidates[cand.unique_kw] = cand
         else:
-            self.candidates[cand.unique_kw].uptadeCand(cand)
+            self.candidates[cand.unique_kw].uptade_candidate(cand)
         self.candidates[cand.unique_kw].tf += 1.
         return self.candidates[cand.unique_kw]
 
 
-class composed_word(object):
+class ComposedWord(object):
+
     def __init__(self, terms): # [ (tag, word, term_obj) ]
         if terms == None:
              self.start_or_end_stopwords = True
              self.tags = set()
              return
+
         self.tags = set([''.join([ w[0] for w in terms ])])
         self.unique_kw = ' '.join( [ w[1].lower() for w in terms ] )
         self.kw = ' '.join( [ w[1] for w in terms ] )
@@ -229,11 +239,11 @@ class composed_word(object):
         self.H = 1.
         self.start_or_end_stopwords = self.terms[0].stopword or self.terms[-1].stopword
 
-    def uptadeCand(self, cand):
+    def uptade_candidate(self, cand):
         for tag in cand.tags:
             self.tags.add( tag )
 
-    def isValid(self):
+    def is_valid(self):
         isValid = False
         for tag in self.tags:
             isValid = isValid or ( "u" not in tag and "d" not in tag )
@@ -320,7 +330,7 @@ class composed_word(object):
         self.H = prod_H / ( ( sum_H + 1 ) * tf_used )
 
 
-class single_word(object):
+class SingleWord(object):
     def __init__(self, unique, idx, graph):
         self.unique_term = unique
         self.id = idx
@@ -397,7 +407,7 @@ class single_word(object):
             return 0
         return self.WDL / wil 
 
-    def addOccur(self, tag, sent_id, pos_sent, pos_text, docid=0):
+    def add_occurrence(self, tag, sent_id, pos_sent, pos_text, docid=0):
         if docid not in self.occurs:
             self.occurs[docid] = {}
         if sent_id not in self.occurs[docid]:

@@ -33,14 +33,18 @@ setup(
     description="Retrive articles from Arquivo.pt web archive and produce a temporal summarization.",
     entry_points={
         'console_scripts': [
-            'contamehistorias=contamehistorias.cli:main',
+            'contamehistorias=contamehistorias.cli_arquivopt:main',
+
+            'contamehistorias_arquivopt=contamehistorias.cli_arquivopt:main',
+            'contamehistorias_signal=contamehistorias.cli_signal:main',
+            'contamehistorias_mediacloud=contamehistorias.cli_mediacloud:main',
         ],
     },
     install_requires=requirements,
     license="MIT license",
     long_description=readme,
+    package_data={'contamehistorias': ['domains.txt']},
     include_package_data=True,
-    package_data={'Resources': ['*.txt', 'contamehistorias/Resources/*.txt']},
     keywords='contamehistorias',
     name='contamehistorias',
     packages=find_packages(),
