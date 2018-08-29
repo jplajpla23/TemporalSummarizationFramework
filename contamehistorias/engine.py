@@ -282,7 +282,7 @@ class TemporalSummarizationEngine(object):
 					print()
 
 			n_domains = len(intervals["domains"])
-			n_docs = intervals["domains"]
+			n_docs = intervals["n_docs"]
 
 		print()
 		print("Summary")
