@@ -102,8 +102,11 @@ class TemporalSummarizationEngine(object):
 
 	def build_intervals(self, resultset, lan):
 		
-		processing_time = time.time()
+		if(len(resultset) > 0):
+			return
 
+		processing_time = time.time()
+		
 		sorted_resultset = sorted(resultset, key=lambda x: x.datetime)
 		sorted_resultset = self.evvaluate_unique_headlines(sorted_resultset)
 		
@@ -255,28 +258,36 @@ class TemporalSummarizationEngine(object):
 		return serialized
 
 	def pprint(self, intervals, verbose=False):
-		print()
-		print("Timeline")
-		print()
-		if("results" in intervals.keys()):
-			periods = intervals["results"]
-			for period in periods:
-				
-				print(period["from"],"until",period["to"])
-				
-				keyphrases = period["keyphrases"]
-				for keyphrase in keyphrases:
-					if(verbose):
-						print("\t",keyphrase.headlines[0].info.datetime.date(), "[", keyphrase.headlines[0].info.domain, "]", keyphrase.kw)
-					else:
-						print("\t" + keyphrase.kw)
-				
-				print()
 		
+		n_docs = 0
+		n_domains = 0
+
+		if (intervals):
+			print()
+			print("Timeline")
+			print()
+			if("results" in intervals.keys()):
+				periods = intervals["results"]
+				for period in periods:
+					
+					print(period["from"],"until",period["to"])
+					
+					keyphrases = period["keyphrases"]
+					for keyphrase in keyphrases:
+						if(verbose):
+							print("\t",keyphrase.headlines[0].info.datetime.date(), "[", keyphrase.headlines[0].info.domain, "]", keyphrase.kw)
+						else:
+							print("\t" + keyphrase.kw)
+					
+					print()
+
+			n_domains = len(intervals["domains"])
+			n_docs = intervals["domains"]
+
 		print()
 		print("Summary")
-		print("\tNumber of unique domains",len(intervals["domains"]))
-		print("\tFound documents",intervals["stats"]["n_docs"])
+		print("\tNumber of unique domains",n_domains)
+		print("\tFound documents",n_docs)
 
 		
 			
