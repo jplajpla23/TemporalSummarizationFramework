@@ -102,13 +102,13 @@ class TemporalSummarizationEngine(object):
 
 	def build_intervals(self, resultset, lan):
 		
-		if(len(resultset) > 0):
+		if(len(resultset) == 0):
 			return
 
 		processing_time = time.time()
 		
 		sorted_resultset = sorted(resultset, key=lambda x: x.datetime)
-		sorted_resultset = self.evvaluate_unique_headlines(sorted_resultset)
+		sorted_resultset = self.evaluate_unique_headlines(sorted_resultset)
 		
 		stopwords = get_stop_words(lan)
 		
@@ -191,7 +191,7 @@ class TemporalSummarizationEngine(object):
 	
 		return dict_result
 
-	def evvaluate_unique_headlines(self, resultset):
+	def evaluate_unique_headlines(self, resultset):
 		final_resultset = []
 		unique_headlines = set()
 
