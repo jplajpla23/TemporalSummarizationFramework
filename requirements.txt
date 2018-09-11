@@ -8,7 +8,6 @@ segtok
 elasticsearch
 nltk
 recordclass
-unidecode
 requests
 Click>=6.0
 click_datetime==0.2
