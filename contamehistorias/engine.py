@@ -7,7 +7,8 @@ from collections import Counter, namedtuple
 from os import path
 from scipy import signal
 from glob import glob
-import Levenshtein, time
+from contamehistorias.Levenshtein import Levenshtein
+import time
 import numpy as np
 from stop_words import get_stop_words
 
@@ -98,6 +99,7 @@ class TemporalSummarizationEngine(object):
 				final_chunks.append(atual_chunk)
 			elif len(final_chunks) > 0:
 				final_chunks[-1].extend(atual_chunk)
+
 		return final_chunks
 
 	def build_intervals(self, resultset, lan):
@@ -219,12 +221,14 @@ class TemporalSummarizationEngine(object):
 		general_results = sorted(general_results, key=lambda x: min([ t.info.datetime for t in x.headlines ]))
 		return general_results, keywords
 
+	
+
 	def evaluate_levenshtein_distance(self, all_kw, kw):
 		'''evaluate if keyphrase is different enought from others candidates'''
 
 		for kw2 in all_kw:
 			dd = Levenshtein.ratio(kw.cand_obj.unique_kw, kw2.cand_obj.unique_kw)
-
+			
 			if dd > self.similarity_threshold or kw.cand_obj.unique_kw in kw2.cand_obj.unique_kw or kw2.cand_obj.unique_kw in kw.cand_obj.unique_kw:
 				return False
 
