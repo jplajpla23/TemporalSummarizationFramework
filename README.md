@@ -211,6 +211,25 @@ class BaseDataSource(object):
 	def toObj(self, list_of_headlines_str):
 		return [ ResultHeadLine.decoder(x) for x in json.loads(list_of_headlines_str) ]
 ```
+
+## NewsIR'16 dataset support
+It is possible to test using (http://research.signalmedia.co/newsir16/signal-dataset.html). In this case there is no need to specify date interval since the dataset comprehends only a one month time frame. 
+
+```
+$ contamehistorias_signal --help
+Usage: contamehistorias_signal [OPTIONS]
+
+
+  Console script for tempsummarization.
+
+Options:
+  --query TEXT  Perform news retrieval with informed query
+  --verbose
+
+  --help        Show this message and exit.
+
+```
+
 ## Contact
 admin@contamehistorias.pt
 
