@@ -84,6 +84,7 @@ Computing important dates and selecting relevant keyphrases
   
 ```python 
   
+  from contamehistorias import engine
   language = "pt"
   
   cont = contamehistorias.engine.TemporalSummarizationEngine()
