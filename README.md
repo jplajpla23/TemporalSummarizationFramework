@@ -64,7 +64,8 @@ Using ArquivoPT search engine API as datasource.
   
 ```python  
   from contamehistorias.datasources.webarchive import ArquivoPT
-
+  from datetime import datetime
+  
 # Specify website and time frame to restrict your query
   domains = [ 'http://publico.pt/', 'http://www.rtp.pt/',
   			  'http://www.dn.pt/', 'http://news.google.pt/',]
