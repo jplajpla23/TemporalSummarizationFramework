@@ -1,7 +1,6 @@
 pandas
 numpy
 scipy
-python-levenshtein
 jellyfish
 networkx
 segtok
