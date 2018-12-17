@@ -4,9 +4,7 @@ This package can retrive articles from Arquivo.pt web archive and produce a temp
 ## Install
 Requires Python 3
 
- ```bash
- pip install git+https://github.com/LIAAD/TemporalSummarizationFramework.git
- ```
+
 
 ## Using terminal
 
