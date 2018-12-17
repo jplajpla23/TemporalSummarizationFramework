@@ -36,7 +36,7 @@ class SignalNewsIRDataset(BaseDataSource):
 			pubdate = datetime.strptime(item["published"][0], '%Y-%m-%dT%H:%M:%SZ')
 			title = item['title'][0]
 
-			item_result = ResultHeadLine(headline=title, datetime=pubdate, domain=domain_url, url="")
+			item_result = ResultHeadLine(headline=title, datetime=pubdate, domain=domain_url, url="", text= item['snippet'])
 			
 			results.append( item_result )
 
