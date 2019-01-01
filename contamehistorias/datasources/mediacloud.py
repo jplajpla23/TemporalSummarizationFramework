@@ -65,7 +65,7 @@ class MediaCloudSearchAPI(BaseDataSource):
 			pubdate = datetime.strptime(item["publish_date"], '%Y-%m-%d %H:%M:%S')
 			domain = urlparse(item["media_url"]).netloc
 			
-			result_item = ResultHeadLine(headline=title, datetime=pubdate, domain=domain, url=item["url"], text= item['snippet'])
+			result_item = ResultHeadLine(headline=title, datetime=pubdate, domain=domain, url=item["url"], text= item['snippet'],linkToExtractedText= item['linkToExtractedText'])
 			result.append(result_item)
 
 		

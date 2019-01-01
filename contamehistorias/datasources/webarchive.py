@@ -56,7 +56,7 @@ class ArquivoPT(BaseDataSource):
 			'maxItems':self.docs_per_query,
 			'itemsPerSite':itemsPerSite,
 			'type':'html',
-			'fields': 'originalURL,title,tstamp,encoding,linkToArchive','snippet'
+			'fields': 'originalURL,title,tstamp,encoding,linkToArchive','snippet','linkToExtractedText'
 		}
 
 		try:
@@ -86,7 +86,8 @@ class ArquivoPT(BaseDataSource):
 											 datetime=datetime.strptime(item['tstamp'], ArquivoPT.DATETIME_FORMAT), 
 											 domain=url_domain, 
 											 url=item['linkToArchive'],
-											 text= item['snippet'])
+											 text= item['snippet'],
+											 linkToExtractedText= item['linkToExtractedText'])
 
 			except:
 				#ignore entried with invalid date format

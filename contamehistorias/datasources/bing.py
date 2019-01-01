@@ -15,7 +15,7 @@ class BingNewsSearchAPI(BaseDataSource):
 		pubdate = datetime.strptime(item["datePublished"].replace('.0000000Z',''), '%Y-%m-%dT%H:%M:%S')
 		domain_name = item["provider"][0]["name"]
 
-		result_item = ResultHeadLine(headline=item['name'], datetime=pubdate, domain=domain_name, url=item['url'], text= item['snippet'])
+		result_item = ResultHeadLine(headline=item['name'], datetime=pubdate, domain=domain_name, url=item['url'], text= item['snippet'],linkToExtractedText=item['linkToExtractedText'])
 		return result_item
 
 	def getResult(self, query, **kwargs):
