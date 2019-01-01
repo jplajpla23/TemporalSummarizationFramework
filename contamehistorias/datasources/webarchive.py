@@ -56,7 +56,7 @@ class ArquivoPT(BaseDataSource):
 			'maxItems':self.docs_per_query,
 			'itemsPerSite':itemsPerSite,
 			'type':'html',
-			'fields': 'originalURL,title,tstamp,encoding,linkToArchive','snippet','linkToExtractedText'
+			'fields': 'originalURL,title,tstamp,encoding,linkToArchive,snippet,linkToExtractedText'
 		}
 
 		try:
